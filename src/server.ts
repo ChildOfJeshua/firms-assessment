@@ -5,8 +5,7 @@ import fs from 'fs';
 import path from 'path';
 import { cleanData, Firm } from './clean';
 
-const { verbose } = sqlite3;
-const db = new sqlite3.verbose().Database('firms.db');
+const db = new sqlite3.Database('firms.db');
 
 const app = express();
 const PORT = 3000;
