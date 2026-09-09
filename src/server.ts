@@ -16,7 +16,8 @@ app.use(express.json());
 // app.use(express.static('public')); 
 
 // Initialize the table
-db.run(fs.readFileSync('schema.sql', 'utf8'), (err) => {
+const schemaPath = path.join(__dirname, '..', 'schema.sql');
+db.run(fs.readFileSync(schemaPath, 'utf8'), (err) => {
   if (err) console.error('Error initializing DB:', err);
 });
 
