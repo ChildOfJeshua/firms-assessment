@@ -10,19 +10,19 @@ interface Firm {
 }
 
 const cleanData = (rawData: string[]): Firm[] => {
-  const firmsMap = new Map <string, Firm>();
+  const firmsMap = new Map<string, Firm>();
 
-  for(const line of rawData) {
-    const parts = linesplit(',');
-    if (parts.length < 2 ) continue;
+  for (const line of rawData) {
+    const parts = line.split(',');
+    if (parts.length < 2) continue;
 
     const [name, cage, email, phone, contact] = parts.map(p => p.trim());
 
     if (!name || !cage) continue;
 
-    const validEmail = email && email.includes('@') ? email: null;
+    const validEmail = email && email.includes('@') ? email : null;
 
-    constf firm: Firm = {
+    const firm: Firm = {
       company_name: name,
       cage: cage,
       email: validEmail,
@@ -31,15 +31,14 @@ const cleanData = (rawData: string[]): Firm[] => {
     };
 
     if (!firmsMap.has(cage)) {
-        firmsMap.set(cage,firm);
-    }
-    else {
+      firmsMap.set(cage, firm);
+    } else {
       const existing = firmsMap.get(cage)!;
-      const existingCount = Object.values(existing).filter(v=> v !==null).length;
-      const newCount = Object.values(firm).filter(v=> v !==null).length;
+      const existingCount = Object.values(existing).filter(v => v !== null).length;
+      const newCount = Object.values(firm).filter(v => v !== null).length;
 
-      if(newCount > existingCount) {
-        firmsMap.set(cage,firm);
+      if (newCount > existingCount) {
+        firmsMap.set(cage, firm);
       }
     }
   }
