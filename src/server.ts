@@ -1,20 +1,25 @@
 import express from 'express';
 import cors from 'cors';
-import Database from 'better-sqlite3';
+import sqlite3 from 'sqlite3';
 import fs from 'fs';
 import path from 'path';
 import { cleanData, Firm } from './clean';
+
+const { verbose } = sqlite3;
+const db = new verbose.sqlite3('firms.db');
 
 const app = express();
 const PORT = 3000;
 
 app.use(cors());
 app.use(express.json());
-// Note: If index.html is in root, remove this line or change path
+// Since index.html is in root, we don't need express.static('public')
 // app.use(express.static('public')); 
 
-const db = new Database('firms.db');
-db.exec(fs.readFileSync('schema.sql', 'utf8'));
+// Initialize the table
+db.run(fs.readFileSync('schema.sql', 'utf8'), (err) => {
+  if (err) console.error('Error initializing DB:', err);
+});
 
 app.post('/api/import', (req, res) => {
   try {
@@ -34,28 +39,32 @@ app.post('/api/import', (req, res) => {
       allCleanFirms.push(...cleanFirms);
     }
 
-    const stmt = db.prepare(`
-      INSERT INTO firms (company_name, cage, email, phone, contact_name)
-      VALUES (?, ?, ?, ?, ?)
-    `);
-
-    const insertMany = db.transaction((firms: Firm[]) => {
-      for (const firm of firms) {
+    // Insert all firms using serialize for sequential execution
+    db.serialize(() => {
+      const stmt = db.prepare('INSERT INTO firms (company_name, cage, email, phone, contact_name) VALUES (?, ?, ?, ?, ?)');
+      
+      allCleanFirms.forEach(firm => {
         stmt.run(firm.company_name, firm.cage, firm.email, firm.phone, firm.contact_name);
-      }
+      });
+      
+      stmt.finalize();
+      
+      // Send response after insertion is done
+      res.json({ success: true, count: allCleanFirms.length });
     });
 
-    insertMany(allCleanFirms);
-
-    res.json({ success: true, count: allCleanFirms.length });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
 app.get('/api/firms', (req, res) => {
-  const firms = db.prepare('SELECT * FROM firms').all();
-  res.json(firms);
+  db.all('SELECT * FROM firms', [], (err, firms) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json(firms);
+  });
 });
 
 app.listen(PORT, () => {
