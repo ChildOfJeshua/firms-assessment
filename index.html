@@ -29,32 +29,33 @@
     <tbody></tbody>
   </table>
 
-  <script>
-    async function importData() {
-      const res = await fetch('/api/import', { method: 'POST' });
-      const data = await res.json();
-      alert(`Imported ${data.count} firms`);
-      loadFirms();
-    }
+<script>
+  const API_URL = 'https://firms-assessment.onrender.com';
 
-    async function loadFirms() {
-      const res = await fetch('/api/firms');
-      const firms = await res.json();
-      const tbody = document.querySelector('#ReaderTable tbody');
-      tbody.innerHTML = '';
-      firms.forEach(f => {
-        const row = `<tr>
-          <td>${f.id}</td>
-          <td>${f.company_name}</td>
-          <td>${f.cage}</td>
-          <td>${f.email}</td>
-          <td>${f.phone}</td>
-          <td>${f.contact_name}</td>
-        </tr>`;
-        tbody.innerHTML += row;
-      });
-    }
-  </script>
+  async function importData() {
+    const res = await fetch(`${API_URL}/api/import`, { method: 'POST' });
+    const data = await res.json();
+    alert(`Imported ${data.count} firms`);
+    loadFirms();
+  }
 
+  async function loadFirms() {
+    const res = await fetch(`${API_URL}/api/firms`);
+    const firms = await res.json();
+    const tbody = document.querySelector('#ReaderTable tbody');
+    tbody.innerHTML = '';
+    firms.forEach(f => {
+      const row = `<tr>
+        <td>${f.id}</td>
+        <td>${f.company_name}</td>
+        <td>${f.cage}</td>
+        <td>${f.email}</td>
+        <td>${f.phone}</td>
+        <td>${f.contact_name}</td>
+      </tr>`;
+      tbody.innerHTML += row;
+    });
+  }
+</script>
 </body>
 </html>
