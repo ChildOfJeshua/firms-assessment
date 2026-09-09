@@ -3,61 +3,58 @@
 <html lang="en">
 
 <head>
-	<meta charset="utf-8>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	
-	<title> Firms Reader </title>
-	<meta name="description" content="CSV reader">
-
-	<link rel="stylesheet" href="/public/style.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Firms Reader</title>
+  <meta name="description" content="CSV reader">
+  <link rel="stylesheet" href="/style.css">
 </head>
 
 <body>
-	<h1> Firms Reader </h1>
-	<button onclick="importData()"> Import Clean Data </button>
-	<button onclick="loadFirms()"> Refresh Table </button>
-	
-	<table id="ReaderTable">
-		<thead>
-			<tr>
-				<th> ID </th>
-				<th> Company Name </th>
-				<th> Cage </th>
-				<th> Phone </th>
-				<th> Contact </th>
-			</tr>
-		</thead>
-	</table>
-				
-<script>
-  async function importData() {
-    const rest = await fetch('/api/import', {method: 'POST'}};
-    const data = await res.json();
-    alert('Imported $data.count} firms');
-    loadFirms();
-  }
+  <h1>Firms Reader</h1>
+  <button onclick="importData()">Import Clean Data</button>
+  <button onclick="loadFirms()">Refresh Table</button>
 
-  async function loadFirms() {
-    const res = await fetch('/api/firms');
-    const firms = await res.json();
-    const tbody = document.querySelector('#firmsTable tbody');
-    tbody.innerHTML = ";
-    firms.forEach(f => {
-      const row = <tr>
+  <table id="ReaderTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Company Name</th>
+        <th>Cage</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Contact</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    async function importData() {
+      const res = await fetch('/api/import', { method: 'POST' });
+      const data = await res.json();
+      alert(`Imported ${data.count} firms`);
+      loadFirms();
+    }
+
+    async function loadFirms() {
+      const res = await fetch('/api/firms');
+      const firms = await res.json();
+      const tbody = document.querySelector('#ReaderTable tbody');
+      tbody.innerHTML = '';
+      firms.forEach(f => {
+        const row = `<tr>
           <td>${f.id}</td>
           <td>${f.company_name}</td>
           <td>${f.cage}</td>
           <td>${f.email}</td>
           <td>${f.phone}</td>
           <td>${f.contact_name}</td>
-      </tr>;
-      tbody.innerHTML += row;
-  });
-  }
-</script>
-
+        </tr>`;
+        tbody.innerHTML += row;
+      });
+    }
+  </script>
 
 </body>
-
-
 </html>
