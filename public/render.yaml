@@ -3,7 +3,7 @@ services:
     name: firms-api
     env: node
     buildCommand: npm install
-    startCommand: npx ts-node src/server.ts
+    startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
