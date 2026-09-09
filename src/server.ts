@@ -54,8 +54,9 @@ app.post('/api/import', (req, res) => {
     });
 
   } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+    const err = error as Error;
+    res.status(500).json({ error: err.message });
+}
 });
 
 app.get('/api/firms', (req, res) => {
